@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NammaTrip AI | Explore Local. Travel Smart.</title>
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+/>
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='style.css') }}"
+/>
+</head>
+<body>
+<header>
+  <div class="brand"><span>✦</span> NammaTrip <b>AI</b></div>
+  <div class="tag">Explore Local. Travel Smart.</div>
+</header>
+
+<main>
+<section class="hero">
+  <div>
+    <p class="eyebrow">AI-POWERED LOCAL TOURISM</p>
+    <h1>Your trip.<br><span>Planned by AI.</span></h1>
+    <p class="sub">Tell us your budget, time and interests. NammaTrip creates a personalized local itinerary and adapts it to weather.</p>
+  </div>
+  <div class="hero-card">
+    <div>🤖</div>
+    <strong>Smart Travel Assistant</strong>
+    <small>Personalized • Budget-aware • Weather-aware</small>
+  </div>
+</section>
+
+<section class="planner card">
+  <div class="section-title">
+    <div><span class="number">01</span><h2>Plan your trip</h2></div>
+    <span class="live">● AI READY</span>
+  </div>
+  <!-- AI Travel Assistant -->
+<section class="ai-assistant">
+    <div class="ai-header">
+        <div>
+            <span class="ai-badge">✨ AI TRAVEL ASSISTANT</span>
+            <h2>Tell us your trip in your own words</h2>
+            <p>
+                Just describe your destination, budget, time and interests.
+                We'll build your trip plan automatically.
+            </p>
+        </div>
+    </div>
+
+    <textarea
+        id="aiPrompt"
+        placeholder="Example: I have ₹1000 and 6 hours in Coimbatore. I love food, photography and nature."
+        rows="4"
+    ></textarea>
+
+    <button type="button" id="aiGenerateBtn" class="ai-button">
+        ✨ Generate My Trip
+    </button>
+
+    <p id="aiStatus" class="ai-status"></p>
+</section>
+
+  <form id="tripForm">
+    <div class="grid">
+      <label>📍 Destination
+        <input id="city" value="Coimbatore" placeholder="e.g. Coimbatore">
+      </label>
+      <label>💰 Budget Per Person (₹)
+        <input id="budget" type="number" value="1500" min="100">
+      </label>
+      <label>👥 Number of Persons
+        <input id="numberOfPersons" type="number" value="1" min="1" step="1">
+      </label>
+      <label>⏰ Start time
+        <input id="start" type="time" value="10:00">
+      </label>
+      <label>⏰ End time
+        <input id="end" type="time" value="19:00">
+      </label>
+    </div>
+
+    <p class="total-budget-display">Estimated Total Budget: <strong id="totalBudget">₹1500</strong></p>
+
+    <div class="field">
+      <div class="label">❤️ What do you enjoy?</div>
+      <div class="chips">
+        <label class="chip"><input type="checkbox" value="nature"> 🌿 Nature</label>
+        <label class="chip"><input type="checkbox" value="food"> 🍛 Food</label>
+        <label class="chip"><input type="checkbox" value="photography"> 📸 Photography</label>
+        <label class="chip"><input type="checkbox" value="history"> 🏛️ History</label>
+        <label class="chip"><input type="checkbox" value="spiritual"> 🛕 Spiritual</label>
+        <label class="chip"><input type="checkbox" value="shopping"> 🛍️ Shopping</label>
+        <label class="chip"><input type="checkbox" value="adventure"> 🧗 Adventure</label>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="label">🚗 Travel mode</div>
+      <div class="chips">
+        <label class="chip selected"><input name="transport" type="radio" value="car" checked> 🚗 Car</label>
+        <label class="chip"><input name="transport" type="radio" value="bike"> 🏍️ Bike</label>
+        <label class="chip"><input name="transport" type="radio" value="bus"> 🚌 Bus</label>
+        <label class="chip"><input name="transport" type="radio" value="walk"> 🚶 Walk</label>
+      </div>
+    </div>
+
+    <button class="primary" type="submit">✨ Generate My AI Trip</button>
+  </form>
+</section>
+
+<section id="loading" class="card loading hidden">
+  <div class="spinner"></div>
+  <h2>Creating your personalized trip...</h2>
+  <p id="loadingText">Understanding your interests</p>
+</section>
+
+<section id="result" class="hidden">
+  <div class="result-head">
+    <div>
+      <p class="eyebrow">YOUR PERSONALIZED ITINERARY</p>
+      <h2 id="resultTitle">Your Trip</h2>
+    </div>
+    <div class="result-actions">
+      <button class="secondary" onclick="window.print()">🖨️ Save / Print</button>
+      <button type="button" class="secondary share-button" id="shareTripBtn" disabled>📤 Share My Trip</button>
+      <span id="shareStatus" class="share-status" role="status" aria-live="polite"></span>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><span>👥</span><small>Number of Persons</small><strong id="resultPersons">1</strong></div>
+    <div class="stat"><span>💰</span><small>Budget Per Person</small><strong id="resultBudgetPerPerson">₹0</strong></div>
+    <div class="stat"><span>🧾</span><small>Total Budget</small><strong id="resultTotalBudget">₹0</strong></div>
+    <div class="stat"><span>💳</span><small>Estimated Trip Cost</small><strong id="spent">₹0</strong></div>
+    <div class="stat"><span>💵</span><small>Remaining Budget</small><strong id="remaining">₹0</strong></div>
+    <div class="stat"><span>🛣️</span><small>Total travel</small><strong id="distance">0 km</strong></div>
+    <div class="stat"><span>🌦️</span><small>Weather</small><strong id="weather">—</strong></div>
+  </div>
+
+  <div class="result-grid">
+
+    <div class="card">
+        <div class="section-title">
+            <h2>🗺️ AI Route Map</h2>
+            <span class="badge">LIVE ROUTE</span>
+        </div>
+
+        <div id="map"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title"><h2>🗓️ Smart itinerary</h2><span class="badge">AI OPTIMIZED</span></div>
+      <div id="timeline"></div>
+    </div>
+<!-- Hidden Gems -->
+<section class="hidden-gems-section">
+
+    <div class="hidden-gems-heading">
+
+        <span class="hidden-gems-badge">
+            ✨ LOCAL SECRETS
+        </span>
+
+        <h2>Hidden Gems You Might Love</h2>
+
+        <p>
+            Discover lesser-known local experiences selected
+            based on your interests.
+        </p>
+
+    </div>
+
+    <div id="hiddenGems" class="hidden-gems-grid"></div>
+    <p id="hiddenGemStatus" class="hidden-gem-status" role="status" aria-live="polite"></p>
+
+</section>
+    <aside class="card ai-box">
+      <div class="ai-icon">🤖</div>
+      <h2>Why this plan?</h2>
+
+      <p id="whyPlanText">
+    NammaTrip analyzes your interests, budget, available time,
+    distance and weather to build your personalized plan.
+      </p>
+      <div class="formula">
+        <span>Interest match</span><b>+</b>
+        <span>Budget</span><b>+</b>
+        <span>Distance</span><b>+</b>
+        <span>Weather</span>
+      </div>
+      <button type="button" id="changePlanBtn" class="change-plan-btn">
+    ✨ Change My Plan
+</button>
+
+<div id="changePlanPanel" class="change-plan-panel hidden">
+
+    <h3>🔄 Customize Your Trip</h3>
+
+    <p class="change-plan-subtitle">
+        Change your preferences and regenerate your itinerary.
+    </p>
+
+    <div class="change-grid">
+
+    <div class="change-field">
+      <label for="changePersons">👥 Number of Persons</label>
+      <input
+        type="number"
+        id="changePersons"
+        placeholder="1"
+        min="1"
+        step="1"
+      >
+    </div>
+
+        <!-- Budget -->
+        <div class="change-field">
+            <label for="changeBudget">💰 Budget Per Person</label>
+            <input
+                type="number"
+                id="changeBudget"
+                placeholder="1500"
+                min="0"
+            >
+        </div>
+
+        <!-- Start -->
+        <div class="change-field">
+            <label for="changeStart">🕐 Start Time</label>
+            <input
+                type="time"
+                id="changeStart"
+            >
+        </div>
+
+        <!-- End -->
+        <div class="change-field">
+            <label for="changeEnd">🕐 End Time</label>
+            <input
+                type="time"
+                id="changeEnd"
+            >
+        </div>
+
+    </div>
+
+    <!-- Interests -->
+    <div class="change-interests">
+
+        <label>❤️ Interests</label>
+
+        <div class="change-chips">
+
+            <label class="change-chip">
+                <input type="checkbox" value="nature">
+                🌿 Nature
+            </label>
+
+            <label class="change-chip">
+                <input type="checkbox" value="food">
+                🍴 Food
+            </label>
+
+            <label class="change-chip">
+                <input type="checkbox" value="photography">
+                📸 Photography
+            </label>
+
+            <label class="change-chip">
+                <input type="checkbox" value="spiritual">
+                🛕 Spiritual
+            </label>
+
+            <label class="change-chip">
+                <input type="checkbox" value="history">
+                🏛️ History
+            </label>
+
+            <label class="change-chip">
+                <input type="checkbox" value="shopping">
+                🛍️ Shopping
+            </label>
+
+            <label class="change-chip">
+                <input type="checkbox" value="adventure">
+                🎢 Adventure
+            </label>
+
+            <label class="change-chip">
+                <input type="checkbox" value="family">
+                👨‍👩‍👧 Family
+            </label>
+
+            <label class="change-chip">
+                <input type="checkbox" value="indoor">
+                🏠 Indoor
+            </label>
+
+        </div>
+    </div>
+
+    <!-- Transport -->
+    <div class="change-transport">
+
+        <label>🚗 Transport</label>
+
+        <div class="change-transport-options">
+
+            <label>
+                <input
+                    type="radio"
+                    name="changeTransport"
+                    value="car"
+                    checked
+                >
+                🚗 Car
+            </label>
+
+            <label>
+                <input
+                    type="radio"
+                    name="changeTransport"
+                    value="bike"
+                >
+                🏍️ Bike
+            </label>
+
+            <label>
+                <input
+                    type="radio"
+                    name="changeTransport"
+                    value="bus"
+                >
+                🚌 Bus
+            </label>
+
+            <label>
+                <input
+                    type="radio"
+                    name="changeTransport"
+                    value="walk"
+                >
+                🚶 Walk
+            </label>
+
+        </div>
+    </div>
+
+    <div class="change-actions">
+
+        <button
+            type="button"
+            id="regenerateBtn"
+            class="regenerate-btn"
+        >
+            ✨ Regenerate Plan
+        </button>
+
+        <button
+            type="button"
+            id="cancelChangeBtn"
+            class="cancel-change-btn"
+        >
+            Cancel
+        </button>
+
+    </div>
+
+    <p id="changeStatus" class="change-status"></p>
+
+</div>
+    </aside>
+  </div>
+</section>
+</main>
+
+<section class="ask-assistant card" id="askAssistant">
+  <div class="ask-assistant-header">
+    <div>
+      <span class="ai-badge">🤖 ASK NAMMATRIP</span>
+      <h2>Your AI Local Travel Assistant</h2>
+      <p>Ask about places, timings, nearby facilities, activities and travel information.</p>
+    </div>
+    <span class="ask-live"><span></span> READY</span>
+  </div>
+
+  <div class="ask-chat-window" id="askChatWindow" aria-live="polite">
+    <div class="ask-message assistant-message">
+      <div class="ask-avatar">🤖</div>
+      <div class="ask-bubble">
+        <strong>NammaTrip</strong>
+        <p>Hi! 👋 Ask me anything about your destination.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="ask-suggestions" id="askSuggestions" aria-label="Suggested questions">
+    <button type="button" class="ask-suggestion">🕐 Opening hours</button>
+    <button type="button" class="ask-suggestion">🍴 Nearby food</button>
+    <button type="button" class="ask-suggestion">🏨 Hotels nearby</button>
+    <button type="button" class="ask-suggestion">📍 What's nearby?</button>
+    <button type="button" class="ask-suggestion">🎯 Things to do</button>
+  </div>
+
+  <form id="askForm" class="ask-composer">
+    <label class="sr-only" for="askInput">Ask NammaTrip a question</label>
+    <input id="askInput" type="text" autocomplete="off" placeholder="Ask about a place or your current trip...">
+    <button type="submit" class="ask-send" id="askSendButton">Send <span>➤</span></button>
+  </form>
+  <p class="ask-status" id="askStatus" role="status" aria-live="polite">Generate a trip to give the assistant local itinerary context.</p>
+</section>
+
+<footer>Built for Hackathon • NammaTrip AI • Explore Local. Travel Smart.</footer>
+<script
+  src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+</script>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

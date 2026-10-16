@@ -1,0 +1,11 @@
+name,description,city,state,country,category,latitude,longitude,address,opening_time,closing_time,ticket_price,average_visit_duration,rating,popularity,indoor_outdoor,family_friendly,photography_friendly,nature_score,adventure_score,culture_score,food_score
+Marudamalai Temple,Hilltop temple with scenic views and a peaceful atmosphere.,Coimbatore,Tamil Nadu,India,"spiritual,photography,nature",11.0461,76.8820,,6,20,0,90,,,outdoor,true,true,0.8,0.2,0.9,0
+Gedee Car Museum,Automobile museum with vintage and classic vehicles.,Coimbatore,Tamil Nadu,India,"history,photography,indoor",11.0074,76.9845,,9,18,200,90,,,indoor,true,true,0,0,0.8,0
+VOC Park,Relaxing city park suitable for families and casual photography.,Coimbatore,Tamil Nadu,India,"nature,family,photography",11.0027,76.9577,,10,19,20,75,,,outdoor,true,true,0.8,0.1,0.1,0
+Brookefields Mall,Popular shopping and entertainment destination with food options.,Coimbatore,Tamil Nadu,India,"shopping,food,indoor",11.0142,76.9634,,10,22,0,120,,,indoor,true,false,0,0,0,0.8
+Isha Yoga Center,Scenic spiritual destination at the foothills of the Velliangiri Hills.,Coimbatore,Tamil Nadu,India,"nature,spiritual,photography",10.9725,76.7360,,6,20,0,150,,,outdoor,true,true,0.9,0.2,0.8,0
+Eachanari Vinayagar Temple,Well-known local temple and cultural landmark.,Coimbatore,Tamil Nadu,India,"spiritual,photography",10.9345,76.9684,,6,21,0,60,,,outdoor,true,true,0.1,0,0.9,0
+Kovai Kondattam,Water-based amusement and recreational activities.,Coimbatore,Tamil Nadu,India,"adventure,family,nature",10.9680,76.8520,,10,18,750,180,,,outdoor,true,false,0.5,0.9,0,0
+Gass Forest Museum,Small natural-history museum with local exhibits.,Coimbatore,Tamil Nadu,India,"history,indoor,nature",11.0020,76.9480,,9,17,10,60,,,indoor,true,true,0.4,0,0.7,0
+Ukkadam Lake,Urban lake area suited for a short scenic stop.,Coimbatore,Tamil Nadu,India,"nature,photography",10.9890,76.9660,,6,19,0,60,,,outdoor,true,true,0.9,0.1,0,0
+RS Puram Food Street,Area with local food choices and evening street activity.,Coimbatore,Tamil Nadu,India,"food,shopping",11.0178,76.9550,,17,22,300,90,,,outdoor,false,true,0,0,0,0.9
